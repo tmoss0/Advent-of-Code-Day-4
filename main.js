@@ -1,10 +1,6 @@
 const fs = require('fs');
 let total = 0;
 
-function doublePoints(counter) {
-  total += counter * 2;
-}
-
 try {
   const data = fs.readFileSync('strings.txt', 'utf8');
   const parsedData = data.split('\r\n');
@@ -18,25 +14,27 @@ try {
     return result;
   });
 
+  // Loop over each card, extract the winning numbers and numbers to match
   for (let card = 0; card < cardRemovedFromData.length - 1; card++) {
-    const bothNumberSets = cardRemovedFromData[card].split(' | ');
-    const winningNumbers = bothNumberSets[0];
-    const numbersToMatch = bothNumberSets[1];
+    console.log(`Card Number ${card}`);
+    const [winningNumbers, numbersToMatch] = cardRemovedFromData[card].split(' | ').map((set) => set.split(' '));
     console.log(`Winning Numbers: ${winningNumbers}`);
-    console.log(`Numbers to Match: ${numbersToMatch}\n\n`);
+    console.log(`Numbers to Match: ${numbersToMatch}`);
 
-    let winningCounter = 1;
-    for (let winningNumber = 0; winningNumber < winningNumbers.length; winningNumber++) {
-      for (let numberToMatch = 0; numberToMatch < numbersToMatch.length; numberToMatch++) {
-        if (winningNumbers[winningNumber] === numbersToMatch[numberToMatch]) {
-          doublePoints(winningCounter);
+    let points = 0;
+    // Get running total of points from matches
+    for (let winningNumber of winningNumbers) {
+      for (let numberToMatch of numbersToMatch) {
+        if (winningNumber === numberToMatch) {
+          points = points === 0 ? 1 : points * 2;
+          console.log(`Match: ${winningNumber}`);
+          console.log(`Number of Matches: ${points}`);
         }
       }
     }
-
-    console.log(`Total for Card ${card + 1}: ${total}`);
+    total += points;
+    console.log(`Total for Card ${card}: ${total}\n\n`);
   }
-
   console.log(`Cumulative Total: ${total}`);
 } catch (error) {
   console.error(error);
