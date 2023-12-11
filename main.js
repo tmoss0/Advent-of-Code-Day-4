@@ -1,5 +1,4 @@
 const fs = require('fs');
-let total = 0;
 
 try {
   const data = fs.readFileSync('strings.txt', 'utf8');
@@ -11,31 +10,46 @@ try {
       .trim()
       .replace(/\s{2,}/g, ' ')
       .trim();
-    return result;
+    return result.split(' | ').map((set) => set.split(' '));
   });
+  const lengthOfCardRemovedFromData = cardRemovedFromData.length - 1;
+  console.log(`Length: ${lengthOfCardRemovedFromData}`);
+  const copiesOfCards = {};
+  for (let card = 1; card < lengthOfCardRemovedFromData + 1; card++) {
+    copiesOfCards[card] = 0;
+  }
 
-  // Loop over each card, extract the winning numbers and numbers to match
-  for (let card = 0; card < cardRemovedFromData.length - 1; card++) {
-    console.log(`Card Number ${card}`);
-    const [winningNumbers, numbersToMatch] = cardRemovedFromData[card].split(' | ').map((set) => set.split(' '));
+  // Iterate through each card
+  for (let card = 1; card < lengthOfCardRemovedFromData; card++) {
+    let numberOfMatches = 0;
+    const [winningNumbers, numbersToMatch] = cardRemovedFromData[card];
+    console.log(`\nCard Number ${card}\n`);
     console.log(`Winning Numbers: ${winningNumbers}`);
     console.log(`Numbers to Match: ${numbersToMatch}`);
 
-    let points = 0;
-    // Get running total of points from matches
+    // Count matches
     for (let winningNumber of winningNumbers) {
       for (let numberToMatch of numbersToMatch) {
         if (winningNumber === numberToMatch) {
-          points = points === 0 ? 1 : points * 2;
           console.log(`Match: ${winningNumber}`);
-          console.log(`Number of Matches: ${points}`);
+          numberOfMatches++;
         }
       }
     }
-    total += points;
-    console.log(`Total for Card ${card}: ${total}\n\n`);
+    // Update the copiesOfCards object with the count of copies for the current card
+    copiesOfCards[card] += numberOfMatches;
+
+    // Iterate through subsequent cards to generate copies
+    for (let copyCard = card + 1; copyCard <= card + numberOfMatches; copyCard++) {
+      copiesOfCards[copyCard]++;
+    }
   }
-  console.log(`Cumulative Total: ${total}`);
+
+  console.log('\nNumber of Copies for Each Card:', copiesOfCards);
+
+  // Calculate the total number of scratchcards
+  const totalScratchcards = Object.values(copiesOfCards).reduce((acc, val) => acc + val, 0);
+  console.log('Total Scratchcards:', totalScratchcards);
 } catch (error) {
   console.error(error);
 }
