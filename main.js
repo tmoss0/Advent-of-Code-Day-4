@@ -12,18 +12,18 @@ try {
       .trim();
     return result.split(' | ').map((set) => set.split(' '));
   });
-  const lengthOfCardRemovedFromData = cardRemovedFromData.length - 1;
-  console.log(`Length: ${lengthOfCardRemovedFromData}`);
+  const lengthOfCardRemovedFromData = cardRemovedFromData.length;
   const copiesOfCards = {};
-  for (let card = 1; card < lengthOfCardRemovedFromData + 1; card++) {
-    copiesOfCards[card] = 0;
+  for (let card = 0; card < lengthOfCardRemovedFromData; card++) {
+    copiesOfCards[card + 1] = 0;
   }
 
   // Iterate through each card
-  for (let card = 1; card < lengthOfCardRemovedFromData; card++) {
+  for (let card = 0; card < lengthOfCardRemovedFromData; card++) {
+    const currentCard = card + 1;
     let numberOfMatches = 0;
     const [winningNumbers, numbersToMatch] = cardRemovedFromData[card];
-    console.log(`\nCard Number ${card}\n`);
+    console.log(`\nCard Number ${currentCard}\n`);
     console.log(`Winning Numbers: ${winningNumbers}`);
     console.log(`Numbers to Match: ${numbersToMatch}`);
 
@@ -36,12 +36,21 @@ try {
         }
       }
     }
-    // Update the copiesOfCards object with the count of copies for the current card
-    copiesOfCards[card] += numberOfMatches;
+    console.log(`Number of Matches: ${numberOfMatches}`);
 
-    // Iterate through subsequent cards to generate copies
-    for (let copyCard = card + 1; copyCard <= card + numberOfMatches; copyCard++) {
-      copiesOfCards[copyCard]++;
+    // Update the copiesOfCards object with the count of copies for the current card
+    copiesOfCards[currentCard] += numberOfMatches;
+
+    if(currentCard === 211) {
+      console.log('Hello');
+    }
+
+    if (numberOfMatches > 0) {
+      const endOfCopies =
+      currentCard + numberOfMatches < lengthOfCardRemovedFromData ? currentCard + numberOfMatches : lengthOfCardRemovedFromData;
+      for (let copyCard = currentCard + 1; copyCard <= endOfCopies; copyCard++) {
+        copiesOfCards[copyCard]++;
+      }
     }
   }
 
